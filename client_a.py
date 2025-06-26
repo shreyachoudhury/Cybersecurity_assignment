@@ -1,7 +1,7 @@
 import socket
 import time
 
-HOST = '192.168.1.11'  # Server IP
+HOST = '127.0.0.1'  # Server IP
 PORT = 12345           # Server Port
 
 def run_client():
