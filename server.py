@@ -1,44 +1,51 @@
 import socket
 import threading
 
-HOST = ''  # Server IP
-PORT = 12345           # Server Port
+HOST = ''  # Listen on all available interfaces
+PORT = 12345
 
-# Shared storage for client connections
-clients = {'A': None, 'B': None}
+clients = {'A': None, 'B': None}  # Store client connections
 
-def handle_client(conn: socket.socket, addr):
-    """Handle client connections and route messages"""
-    with conn:
-        # Receive client identity (A or B)
-        identity = conn.recv(1024).decode('utf-8').strip()
-        print(f"[{addr}] Connected as Client {identity}")
+def handle_client(conn: socket.socket, addr, identity: str):
+    print(f"[{addr}] Connected as Client {identity}")
+    clients[identity] = conn
 
-        # Store connection
-        clients[identity] = conn
-
+    try:
         if identity == 'A':
-            # Forward number from A to B
+            # Receive number from A and forward to B
             number = conn.recv(1024)
             if clients['B']:
                 clients['B'].sendall(number)
         elif identity == 'B':
-            # Forward result from B to A
+            # Receive result from B and forward to A
             result = conn.recv(1024)
             if clients['A']:
                 clients['A'].sendall(result)
+    except Exception as e:
+        print(f"[{addr}] Error: {e}")
+    finally:
+        # Cleanup
+        if identity in clients and clients[identity] == conn:
+            clients[identity] = None
+        conn.close()
 
 def run_server():
-    """Main server function"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
-        print(f"Server listening on {HOST}:{PORT}")
-
+        print(f"Server listening on port {PORT}")
         while True:
             conn, addr = s.accept()
-            thread = threading.Thread(target=handle_client, args=(conn, addr))
-            thread.start()
+            # Wait for client to identify themselves
+            identity = conn.recv(1024).decode('utf-8').strip()
+            if identity in ('A', 'B'):
+                threading.Thread(
+                    target=handle_client,
+                    args=(conn, addr, identity),
+                    daemon=True
+                ).start()
+            else:
+                conn.close()
 
 if __name__ == "__main__":
     run_server()
