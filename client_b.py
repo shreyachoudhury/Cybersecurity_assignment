@@ -12,6 +12,7 @@ def run_client():
             # Receive number from server
             data = s.recv(1024)
             if not data:
+                print("Connection closed by server.")
                 break
             number = float(data.decode('utf-8'))
             print(f"Received number: {number}")
