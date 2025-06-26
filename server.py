@@ -11,22 +11,28 @@ def handle_client(conn: socket.socket, addr, identity: str):
     clients[identity] = conn
 
     try:
-        if identity == 'A':
-            # Receive number from A and forward to B
-            number = conn.recv(1024)
-            if clients['B']:
-                clients['B'].sendall(number)
-        elif identity == 'B':
-            # Receive result from B and forward to A
-            result = conn.recv(1024)
-            if clients['A']:
-                clients['A'].sendall(result)
+        while True:
+            if identity == 'A':
+                # Receive number from A and forward to B
+                number = conn.recv(1024)
+                if not number:
+                    break
+                if clients['B']:
+                    clients['B'].sendall(number)
+            elif identity == 'B':
+                # Receive result from B and forward to A
+                result = conn.recv(1024)
+                if not result:
+                    break
+                if clients['A']:
+                    clients['A'].sendall(result)
     except Exception as e:
         print(f"[{addr}] Error: {e}")
     finally:
         if identity in clients and clients[identity] == conn:
             clients[identity] = None
         conn.close()
+        print(f"[{addr}] Client {identity} disconnected")
 
 def run_server():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
