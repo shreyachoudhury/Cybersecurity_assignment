@@ -9,17 +9,14 @@ def run_client():
         s.sendall(b'B')  # Identify as Client B
         print("Client B ready. Waiting for number...")
         while True:
-            # Receive number from server
             data = s.recv(1024)
             if not data:
                 print("Connection closed by server.")
                 break
             number = float(data.decode('utf-8'))
             print(f"Received number: {number}")
-            # Compute square
-            result = number ** 2
+            result = number ** 2  # Or any operation
             print(f"Computed result: {result}")
-            # Send result to server
             s.sendall(str(result).encode('utf-8'))
 
 if __name__ == "__main__":
