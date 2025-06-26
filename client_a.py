@@ -9,13 +9,10 @@ def run_client():
         s.connect((HOST, PORT))
         s.sendall(b'A')  # Identify as Client A
 
-        # Get number from user
         number = input("Enter a number: ")
         start_time = time.time()
-        # Send number and timestamp
-        s.sendall(f"{number} {start_time}".encode('utf-8'))
+        s.sendall(number.encode('utf-8'))
 
-        # Receive result from server
         result = s.recv(1024).decode('utf-8')
         end_time = time.time()
         delay = end_time - start_time
