@@ -1,8 +1,8 @@
 import socket
 import time
 
-HOST = '127.0.0.1'  # Server IP
-PORT = 12345           # Server Port
+HOST = '127.0.0.1'  # Change to your server's IP if not local
+PORT = 12345
 
 def run_client():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -11,17 +11,14 @@ def run_client():
 
         # Get number from user
         number = input("Enter a number: ")
-        start_time = time.time()  # Start timing
-
-        # Send number to server
+        start_time = time.time()
         s.sendall(number.encode('utf-8'))
 
         # Receive result from server
         result = s.recv(1024).decode('utf-8')
-        end_time = time.time()  # End timing
-
-        # Calculate and display delay
+        end_time = time.time()
         delay = end_time - start_time
+
         print(f"Result: {result}")
         print(f"Delay: {delay:.4f} seconds")
 
