@@ -1,10 +1,10 @@
 import socket
 import threading
 
-HOST = ''  # Listen on all available interfaces
+HOST = ''  # Listen on all interfaces
 PORT = 12345
 
-clients = {'A': None, 'B': None}  # Store client connections
+clients = {'A': None, 'B': None}
 
 def handle_client(conn: socket.socket, addr, identity: str):
     print(f"[{addr}] Connected as Client {identity}")
@@ -24,7 +24,6 @@ def handle_client(conn: socket.socket, addr, identity: str):
     except Exception as e:
         print(f"[{addr}] Error: {e}")
     finally:
-        # Cleanup
         if identity in clients and clients[identity] == conn:
             clients[identity] = None
         conn.close()
